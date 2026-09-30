@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đọc Tiểu Thuyết Online</title>
+    <style>
+        :root { --bg-color: #f5f6fa; --text-color: #2c3e50; --card-bg: #ffffff; }
+        body.dark-mode { --bg-color: #1a1a2e; --text-color: #e6e6e6; --card-bg: #16213e; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; transition: all 0.3s ease; }
+        .container { max-width: 800px; margin: 20px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h1 { text-align: center; margin-bottom: 5px; font-size: 26px; }
+        .author { text-align: center; color: #7f8c8d; font-style: italic; margin-bottom: 25px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .controls { display: flex; justify-content: space-between; align-align: center; background: rgba(0,0,0,0.03); padding: 10px; border-radius: 8px; width: 100%; }
+        select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; max-width: 60%; }
+        .btn { padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .btn:hover { background: #2980b9; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .theme-toggle { background: #9b59b6; }
+        .content { font-size: 19px; line-height: 1.8; white-space: pre-line; word-break: break-word; min-height: 400px; padding: 10px 0; border-top: 1px solid rgba(0,0,0,0.1); border-bottom: 1px solid rgba(0,0,0,0.1); margin: 20px 0; }
+        .footer-nav { display: flex; justify-content: space-between; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <button class="btn theme-toggle" onclick="toggleDarkMode()">🌓 Chế độ Sáng/Tối</button>
+        </div>
+
+        <h1 id="book-title">Tên Bộ Truyện</h1>
+        <div class="author" id="book-author">Tác giả</div>
+
+        <div class="controls">
+            <button class="btn" id="prev-btn" onclick="changeChapter(-1)">◄ Chương trước</button>
+            <select id="chapter-select" onchange="selectChapter()"></select>
+            <button class="btn" id="next-btn" onclick="changeChapter(1)">Chương sau ►</button>
+        </div>
+
+        <div class="content" id="chapter-content">Nội dung đang tải...</div>
+
+        <div class="footer-nav">
+            <button class="btn" id="prev-btn-2" onclick="changeChapter(-1)">◄ Chương trước</button>
+            <button class="btn" id="next-btn-2" onclick="changeChapter(1)">Chương sau ►</button>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================
+        // KHU VỰC ĐĂNG BÀI & CẬP NHẬT TRUYỆN CỦA BẠN TẠI ĐÂY
+        // ===================================================
+        const BOOK_DATA = {
+            title: "Tên Bộ Tiểu Thuyết Của Bạn",
+            author: "Tên Tác Giả",
+            chapters: [
+                {
+                    id: 1,
+                    title: "Chương 1: Khởi Đầu Mới",
+                    content: `Gõ hoặc dán nội dung chương 1 của bạn vào đây...
+Trang web tự động giữ nguyên các dòng xuống hàng của bạn mà không bị rớt chữ.`
+                },
+                {
+                    id: 2,
+                    title: "Chương 2: Bước Chân Đầu Tiên",
+                    content: `Nội dung chương 2 của bạn ở đây...`
+                }
+            ]
+        };
+
+        let currentChapterIndex = 0;
+
+        function initBook() {
+            document.getElementById('book-title').innerText = BOOK_DATA.title;
+            document.getElementById('book-author').innerText = "Tác giả: " + BOOK_DATA.author;
+
+            const select = document.getElementById('chapter-select');
+            select.innerHTML = '';
+            BOOK_DATA.chapters.forEach((chap, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = chap.title;
+                select.appendChild(opt);
+            });
+
+            loadChapter(0);
+        }
+
+        function loadChapter(index) {
+            currentChapterIndex = index;
+            const chap = BOOK_DATA.chapters[index];
+            document.getElementById('chapter-content').innerText = chap.content;
+            document.getElementById('chapter-select').value = index;
+
+            const isFirst = (index === 0);
+            const isLast = (index === BOOK_DATA.chapters.length - 1);
+
+            document.getElementById('prev-btn').disabled = isFirst;
+            document.getElementById('prev-btn-2').disabled = isFirst;
+            document.getElementById('next-btn').disabled = isLast;
+            document.getElementById('next-btn-2').disabled = isLast;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectChapter() {
+            const index = parseInt(document.getElementById('chapter-select').value);
+            loadChapter(index);
+        }
+
+        function changeChapter(direction) {
+            const newIndex = currentChapterIndex + direction;
+            if (newIndex >= 0 && newIndex < BOOK_DATA.chapters.length) {
+                loadChapter(newIndex);
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        window.onload = initBook;
+    </script>
+</body>
+</html>
